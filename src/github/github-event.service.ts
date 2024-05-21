@@ -5,6 +5,9 @@ import { Subject } from 'rxjs';
 import { GithubEventModel } from './schema/github-event.schema';
 import { PaginationService } from '../utils/pagination/pagination.service';
 
+const DEFAULT_LIMIT = 10;
+const DEFAULT_OFFSET = 0;
+
 @Injectable()
 export class GithubEventService {
   constructor(
@@ -42,7 +45,7 @@ export class GithubEventService {
     return await newEvent.save();
   }
 
-  public async getAll(offset = 0, limit = 10) {
+  public async getAll(offset = DEFAULT_OFFSET, limit = DEFAULT_LIMIT) {
     const totalCount = await this.eventModel.countDocuments();
     const pagination = this.paginationService.getPagination(
       offset,
@@ -62,8 +65,25 @@ export class GithubEventService {
     return await this.eventModel.findById(id);
   }
 
-  public async getByUsername(githubUsername: string) {
-    return await this.eventModel.find({ githubUsername });
+  public async getByUsername(
+    githubUsername: string,
+    offset = DEFAULT_OFFSET,
+    limit = DEFAULT_LIMIT,
+  ) {
+    const totalCount = await this.eventModel.countDocuments({ githubUsername });
+    const pagination = this.paginationService.getPagination(
+      offset,
+      limit,
+      totalCount,
+    );
+
+    const query = this.eventModel.find({ githubUsername }).skip(offset);
+    if (limit) {
+      query.limit(limit);
+    }
+
+    const result = await query;
+    return { items: result, meta: { pagination } };
   }
 
   public async deleteByUsername(githubUsername: string) {

@@ -144,7 +144,10 @@ export class GithubController {
   }
 
   @Get(':id/events')
-  async findEvents(@Param('id') id: string) {
-    return await this.eventService.getByUsername(id);
+  async findEvents(
+    @Param('id') id: string,
+    @Query() { offset, limit }: PaginationParams,
+  ) {
+    return await this.eventService.getByUsername(id, offset, limit);
   }
 }
