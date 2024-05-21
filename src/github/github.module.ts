@@ -18,6 +18,7 @@ import { GithubEventService } from './github-event.service';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { EventGateway } from './event.gateway';
+import { UtilsModule } from 'src/utils/utils.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { EventGateway } from './event.gateway';
       { name: GithubProfileModel.name, schema: GithubProfileSchema },
       { name: GithubEventModel.name, schema: GithubEventSchema },
     ]),
+    UtilsModule,
   ],
   controllers: [GithubController],
   providers: [

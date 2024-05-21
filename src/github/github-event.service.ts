@@ -3,12 +3,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Subject } from 'rxjs';
 import { GithubEventModel } from './schema/github-event.schema';
+import { PaginationService } from '../utils/pagination/pagination.service';
 
 @Injectable()
 export class GithubEventService {
   constructor(
     @InjectModel(GithubEventModel.name)
     private readonly eventModel: Model<GithubEventModel>,
+    private readonly paginationService: PaginationService,
   ) {}
 
   /**
@@ -42,15 +44,12 @@ export class GithubEventService {
 
   public async getAll(offset = 0, limit = 10) {
     const totalCount = await this.eventModel.countDocuments();
-    const pagination = {
-      offset: offset,
-      limit: limit,
-      previousOffset: offset - limit < 0 ? 0 : offset - limit,
-      nextOffset: offset + limit,
-      pageCount: Math.floor(totalCount / limit) + 1,
-      currentPage: Math.floor(offset / limit) + 1,
-      totalCount: totalCount,
-    };
+    const pagination = this.paginationService.getPagination(
+      offset,
+      limit,
+      totalCount,
+    );
+
     const query = this.eventModel.find().skip(offset);
     if (limit) {
       query.limit(limit);

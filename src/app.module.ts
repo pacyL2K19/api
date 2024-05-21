@@ -9,6 +9,7 @@ import { UserModule } from './user/user.module';
 import { GithubModule } from './github/github.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { UtilsModule } from './utils/utils.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { APP_GUARD } from '@nestjs/core';
     }),
     UserModule,
     GithubModule,
+    UtilsModule,
   ],
   controllers: [AppController],
   providers: [
